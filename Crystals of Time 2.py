@@ -3,7 +3,8 @@ from pygame.locals import *
 pygame.display.init()
 pygame.mixer.init()
 
-display = pygame.display.set_mode((480, 270))
+display = pygame.display.set_mode((480*2, 288*2))
+screen = pygame.Surface((480, 288))
 pygame.display.set_caption("Crystals of Time by SmellyFrog")
 
 spr_player = pygame.image.load("assets/lily.png").convert_alpha()
@@ -20,8 +21,10 @@ sfx_crash.set_volume(0.2)
 sfx_collect = pygame.mixer.Sound("assets/collect.wav")
 sfx_crystal = pygame.mixer.Sound("assets/crystal.wav")
 
+# class Player(pygame.sprite.Sprite):
 class Player():
     def __init__(self, x, y):
+        # super(Player, self).__init__()
         self.x = x
         self.y = y
         self.xSpeed = 0
@@ -33,6 +36,7 @@ class Player():
         self.frame = 0
         self.faceRight = True
         self.timer = 0
+
     def update(self):
 
         self.x += self.xSpeed
@@ -75,7 +79,7 @@ class Player():
         self.rightCol = False
             
     def draw(self):
-        display.blit(spr_player, (int(self.x), int(self.y) - 16), (self.frame * 32, (not self.faceRight) * 48, 32, 48))
+        screen.blit(spr_player, (int(self.x), int(self.y) - 16), (self.frame * 32, (not self.faceRight) * 48, 32, 48))
         #pygame.draw.rect(display, (0, 255, 0), (int(self.x), int(self.y), 32, 32))
 
 class Terrain():
@@ -129,7 +133,8 @@ class Terrain():
         self.col = False
         
     def draw(self):
-        display.blit(spr_tiles, (int(self.x), int(self.y)), (self.type * 32, 0, 32, 32))
+        # this blits the tiles at the position, but starting with 6*32 end ending 32 further
+        screen.blit(spr_tiles, (int(self.x), int(self.y)), (self.type * 32, 0, 32, 32))
 
 class Crystal():
     def __init__(self, x, y, num):
@@ -149,7 +154,9 @@ class Crystal():
             
     def draw(self):
         if not self in remove:
-            display.blit(spr_crystal1, (int(self.x), int(self.y) + math.sin(timer / 16) * 16), ((timer % 16 < 8) * 32, 0, 32, 32))
+            screen.blit(spr_crystal1, (int(self.x), int(self.y) + math.sin(timer / 16) * 16), ((timer % 16 < 8) * 32, 0, 32, 32))
+
+
 class LargeCrystal():
     def __init__(self, x, y):
         self.x = x
@@ -183,7 +190,7 @@ class LargeCrystal():
             
     def draw(self):
         if not self in remove:
-            display.blit(spr_crystal2, (int(self.x), int(self.y)), (self.timer // 32 * 64, 0, 64, 96))
+            screen.blit(spr_crystal2, (int(self.x), int(self.y)), (self.timer // 32 * 64, 0, 64, 96))
 
         
 '''
@@ -195,81 +202,115 @@ C diamond
 4 jumper
 3 danger stone
 '''
-layout = [ ("22222222226   ",
-           "22 222         ",
-           "222            ",
-           "2       22     ",
-           "2      222     ",
-           "2P    22 2     ",
-           "2222222222   C ",
-           "22 222 22200000",
-           "222222222211111",
+layout = [
+          ("222222222222222", # cover
+           "22 226        2",
+           "2226          2",
+           "2       76    2",
+           "2      7226   2",
+           "2P    72 226   ",
+           "222222222226 C ",
+           "22 222 2 22 222",
+           "222222222222222",
+           ),
+          # stage 1 like the cover
+          ("222222222222222", # cover
+           "22 226        2",
+           "2226          2",
+           "2       76    2",
+           "2      7226   2",
+           "2P    72 226   ",
+           "222222222226 C ",
+           "22 222 2 22 222",
+           "222222222222222",
            ),
 
-          ("22222222226    ",
-           "22 222         ",
-           "222222         ",
-           "2       22     ",
-           "2      222     ",
-           "2P    22 2     ",
-           "2222222222   C ",
-           "22 222 22200000",
-           "222222222211111",
+          # ("22222222226    ", # 1st as cover
+          #  "22 226         ",
+          #  "22226          ",
+          #  "2       76     ",
+          #  "2      726     ",
+          #  "2P    72 6     ",
+          #  "2222222226   C ",
+          #  "22 222 22200000",
+          #  "222222222211111",
+          #  ),
+
+          ("222222222222222", # 2 - the stairs
+           "2  2         C2",
+           "2222           ",
+           "2        722222",
+           "2       72 22 2",
+           "2     722222222",
+           "    72222 22 22",
+           "222222222222222",
+           "222 2222 222 22",
            ),
 
-          ("               ",
-           "             C ",
-           "           2222",
-           "         222222",
-           "        22 22 2",
-           "      222222222",
-           "    22222 22 22",
-           "000022222222222",
-           "111111111111111",
-           ),
-
-          ("               ",
-           "               ",
-           "               ",
+          ("222222222222222", # 3 - under palace
+           "2             2",
+           "2              ",
            "      2  2    2",
-           "      2P 2   22",
+           "      2C 2   22",
            "     222222   2",
            "22  22222222  2",
-           "2    C 22C    2",
+           "2    C   C    2",
            "222222222222222"
            ),
 
 
-          ("               ",
+          ("               ", # 4 jumping
            "             C ",
-           "           2222",
+           "               ",
            "222        2222",
            "2 2        22 2",
-           "222     4440222",
-           "2 2     0001222",
-           "222044401111222",
-           "222000001111111",
+           "222     4442222",
+           "2 2     22222 2",
+           "222 444 2222222",
+           "222333332222222",
            ),
-          ("               ",
+          ("               ", # 5 - triple jumping
            "               ",
-           "             22",
-           "22        4  2 ",
+           "             72",
+           "26        4  2 ",
            " 2     4     22",
            "22  4        2 ",
            "22  C  C  C  22",
-           "000000000000000",
-           "111111111111111",
+           "222222333222222",
+           "222222222222222",
            ),
-          ("               ",
+          ("               ", # beware the fire
            "               ",
            "2              ",
-           "22             ",
-           "2      2    C  ",
+           "22         C ",
+           "2      2       ",
            "22         2   ",
            "2C  2      2   ",
-           "000000033000000",
-           "111111111111111",
+           "222223333332222",
+           "222222222222222",
            ),
+           ("222222222222222",
+           "2222222222226  ",
+           "2              ",
+           "              2",
+           "       76     2",
+           "           2 C2",
+           "   22      2222",
+           "222223333332222",
+           "222222222222222",
+           ),
+           # arrived here
+                    ("               ",
+           "             C ",
+           "           2222",
+           "222          22",
+           "2          22 2",
+           "222     4  2222",
+           "2C      1   C 2",
+           "222  4  1111222",
+           "222333331111111",
+           ),
+
           ("222222222222222",
            "            C  ",
            "               ",
@@ -280,20 +321,20 @@ layout = [ ("22222222226   ",
            "222333333332222",
            "111111111111111",
            ),
-          ("     2222222222",
-           "     2        2",
-           "     2  2222  2",
-           "     2     2  2",
-           "    2222  32  2",
-           "     2    22 C2",
+          ("     7222222222",
+           "     7        2",
+           "     7  7226  2",
+           "     7     2  2",
+           "    7226  32  2",
+           "     7    22 C2",
            "         222   ",
            "000000000000000",
            "111111111111111",
            ),
-          ("             2 ",
-           "           C 2 ",
-           "             2 ",
-           "    2222222522 ",
+          ("             7 ",
+           "           C 7 ",
+           "             7 ",
+           "    7222222522 ",
            "               ",
            "   2       C   ",
            "               ",
@@ -301,13 +342,13 @@ layout = [ ("22222222226   ",
            "111111111111111",
            ),
           ("               ",
-           "               ",
-           "               ",
+           "             72",
+           "             72",
            "               ",
            "            C  ",
-           "               ",
-           "    3   3     2",
-           "000000000000000",
+           "             72",
+           "   738  736   2",
+           "000000000022222",
            "111111111111111",
            ),
           ("               ",
@@ -400,8 +441,11 @@ while run:
                 load.append(Terrain(j*32, i*32, 4))
             if layout[room_num][i][j] == "5":
                 load.append(Terrain(j*32, i*32, 5))
+            # bricks
             if layout[room_num][i][j] == "6":
                 load.append(Terrain(j*32, i*32, 6))
+            if layout[room_num][i][j] == "7":
+                load.append(Terrain(j*32, i*32, 7))
             if layout[room_num][i][j] == "C":
                 load.append(Crystal(j*32, i*32, room_num))
             if layout[room_num][i][j] == "L":
@@ -424,23 +468,20 @@ while run:
 
         clock.tick(60)
 
-        display.fill((0, 0, 0))
+        screen.fill((0, 0, 0))
         if room_num == 0:
-            display.blit(title, (0, 0))
+            screen.blit(title, (0, 0))
         else:
-            display.blit(background, (0, 0))
+            screen.blit(background, (0, 0))
 
         # meteor
 
-        pygame.draw.line(display, (200, 255, 255), (239, 160 - (countdown // 6)), (239, -4), 6)
-        pygame.draw.circle(display, (200, 255, 255), (240, 160 - (countdown // 6)), 8)
-        pygame.draw.circle(display, (255, 255, 255), (240, 164 - (countdown // 6)), 4)
 
         if countdown == 0:
             pygame.mixer.Sound.play(sfx_crash)
             pygame.mixer.music.stop()
         if countdown < 0:
-            pygame.draw.circle(display, (255, 255, 255), (240, 204), -10 * countdown)
+            pygame.draw.circle(screen, (255, 255, 255), (240, 204), -10 * countdown)
         if countdown < -100:
             alive = False
             room_num = 0
@@ -473,20 +514,23 @@ while run:
 
         if countdown > 0 and countdown < 3000 and room_num >= 1:
             for i in range(len(str(countdown))):
-                display.blit(spr_number, (16 + i *16, 16), (int(str(countdown)[i]) * 16, 0, 16, 32))
+                screen.blit(spr_number, (16 + i *16, 16), (int(str(countdown)[i]) * 16, 0, 16, 32))
 
         if room_num == 0 and (keys[pygame.K_SPACE] or keys[pygame.K_LEFT] or keys[pygame.K_RIGHT] or keys[pygame.K_UP] or keys[pygame.K_DOWN]):
             room_num += 1
             alive = False
             music = pygame.mixer.music.load("assets/swinging in the night sky.wav")
-            pygame.mixer.music.set_volume(0.5)
+            pygame.mixer.music.set_volume(0.3)
             pygame.mixer.music.play(-1)
             player_y = 42069
             countdown = 1200
             player_x = 42069
             collected = []
                         
-            
+        pygame.draw.line(screen, (200, 255, 255), (239, 160 - (countdown // 6)), (239, -4), 6)
+        pygame.draw.circle(screen, (200, 255, 255), (240, 160 - (countdown // 6)), 8)
+        pygame.draw.circle(screen, (255, 255, 255), (240, 164 - (countdown // 6)), 4)
+        display.blit(pygame.transform.scale(screen, (480*2, 288*2)),(0, 0))
         pygame.display.flip()
 
     if player.x + 16 < 0:
