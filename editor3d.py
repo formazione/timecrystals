@@ -10,7 +10,7 @@ class Sprite:
     width = 32
     height = 32
 
-tiles = pygame.image.load("assets\\tiles.png")
+tiles = pygame.image.load("assets\\tiles2.png")
 
 
 _map = [
