@@ -10,7 +10,7 @@ screen = pygame.Surface((480, 288))
 pygame.display.set_caption("Crystals of Time by SmellyFrog")
 
 spr_player = pygame.image.load("assets/lily.png").convert_alpha()
-spr_tiles = pygame.image.load("assets/tiles2.png").convert_alpha()
+spr_tiles = pygame.image.load("assets/tiles3.png").convert_alpha()
 spr_crystal1 = pygame.image.load("assets/crystal.png").convert_alpha()
 spr_crystal2 = pygame.image.load("assets/crystal2.png").convert_alpha()
 spr_particle = pygame.image.load("assets/particles.png").convert_alpha()

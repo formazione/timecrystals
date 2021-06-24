@@ -10,7 +10,7 @@ class Sprite:
     width = 32
     height = 32
 
-tiles = pygame.image.load("assets\\tiles2.png")
+tiles = pygame.image.load("assets\\tiles3.png")
 
 from levels2 import *
 
@@ -46,12 +46,12 @@ def blit_tiles(bg="") -> tuple:
                 screen0.blit(tiles, (x*32, y*32), (int(str_num) * 32, 0, 32, 32))
     return tup
 # Load an image
+pos = blit_tiles()
 
 def background(image):
     house1 = pygame.image.load(image)
     screen0.blit(house1, (0, 0))
 
-pos = blit_tiles()
 
 def print_map():
     print("(")
