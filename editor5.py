@@ -72,7 +72,7 @@ def save_map(levels="levels.txt", clear=0):
         # it appends the maps
         with open(levels, "r") as file:
             file = file.read()
-            file = file.replace("]", ",")
+            file = file.replace("]", "")
         with open(levels, "w") as file2:
             stringa = f"{file}\n{text}\n]"
             file2.write(stringa)

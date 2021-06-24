@@ -1,5 +1,7 @@
 import pygame, time, random, math
 from pygame.locals import *
+
+pygame.init()
 pygame.display.init()
 pygame.mixer.init()
 
@@ -80,7 +82,7 @@ class Player():
             
     def draw(self):
         screen.blit(spr_player, (int(self.x), int(self.y) - 16), (self.frame * 32, (not self.faceRight) * 48, 32, 48))
-        #pygame.draw.rect(display, (0, 255, 0), (int(self.x), int(self.y), 32, 32))
+        # pygame.draw.rect(display, (0, 255, 0), (int(self.x), int(self.y), 32, 32))
 
 class Terrain():
     def __init__(self, x, y, Type):
@@ -103,12 +105,15 @@ class Terrain():
                 if self.type == 3:
                     player.x -= 96
                     pygame.mixer.Sound.play(sfx_crystal)
+
+                # This is to jump
                 
                 elif self.type == 4:
                     player.ySpeed = -10
                     player.bottomCol = False
                     pygame.mixer.Sound.play(sfx_crystal)
-                # The tile jump
+                
+                # This make you go down
                 
                 elif self.type == 5:
                     player.y += 64
@@ -170,7 +175,9 @@ class LargeCrystal():
         global player_y
         global player_x
         global countdown
-        if ((player.x - self.x)**2 + (player.y - self.y)**2)**0.5 < 96 and self.alive and countdown > 0:
+        if ((player.x - self.x)**2 + (
+
+            player.y - self.y)**2)**0.5 < 96 and self.alive and countdown > 0:
             self.timer += 1
             if self.timer > 80 and self.alive:
                 player.timer = 3000
@@ -215,6 +222,9 @@ room_num = 0
 timer = 0
 countdown = 1200
 run = True
+
+
+
 while run:
     ### level generation
 
@@ -255,12 +265,15 @@ while run:
     if player_y != 42069:
         player.y = player_y
         player.x = player_x
+
+
     
     clock = pygame.time.Clock()
     alive = True
     while run and alive:
 
         timer += 1
+        # Countdown starts from second room
         if countdown <= 3000 and room_num >= 1:
             countdown -= 1
 
@@ -274,16 +287,17 @@ while run:
 
         # meteor
 
-
+        # WHEN TIME'S OVER
         if countdown == 0:
             pygame.mixer.Sound.play(sfx_crash)
             pygame.mixer.music.stop()
+        # This draws the the circle
         if countdown < 0:
             pygame.draw.circle(screen, (255, 255, 255), (240, 204), -10 * countdown)
         if countdown < -100:
             alive = False
             room_num = 0
-            countdown = 1200
+            countdown = 3000
             player_y = 42069
             player_x = 42069
             collected = []
@@ -298,6 +312,7 @@ while run:
 
         keys = pygame.key.get_pressed()
 
+        # 
         for obj in load:
             obj.update()
             obj.draw()
@@ -321,7 +336,7 @@ while run:
             pygame.mixer.music.set_volume(0.3)
             pygame.mixer.music.play(-1)
             player_y = 42069
-            countdown = 1200
+            countdown = 3000
             player_x = 42069
             collected = []
                         

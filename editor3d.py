@@ -39,7 +39,7 @@ _map = ["               ",
 
 
 size = width*Sprite.width, height*Sprite.height
-screen = pygame.display.set_mode((size))
+screen = pygame.display.set_mode((width*Sprite.width, height*Sprite.height))
 screen0 = pygame.Surface(size)
 
 def blit_tiles(bg="") -> tuple:
@@ -68,14 +68,24 @@ def print_map():
         print(f"\"{line}\",")
     print("),")
 
-def save_map():
+
+
+
+def save_map(levels="levels.txt", clear=0):
     text = ""
     text += "("
     for line in _map:
         text += f"\"{line}\",\n"
     text += "),"
-    with open("map.txt", "a") as file:
-        file.write(text)
+    if clear==0:
+        # it appends the maps
+        with open(levels, "a") as file:
+            file.write(text)
+    elif clear:
+        # one map only
+        with open(levels, "w") as file:
+            file.write(text)
+
     return text
 
 def get_pos() -> tuple:
@@ -109,10 +119,13 @@ while True:
           pygame.quit()
     
       if event.type == pygame.KEYDOWN:
-    
+            print(type(event.key))
             if event.key == pygame.K_s:
-                save_map()
-                os.startfile("map.txt")
+                save_map(levels="levels.txt")
+                os.startfile("levels.txt")
+            if event.key == pygame.K_n:
+                save_map(levels="levels1.txt", clear=1)
+                os.startfile("levels1.txt")
     
             if event.key == pygame.K_p:
                 pygame.display.set_caption("Editor mode")
