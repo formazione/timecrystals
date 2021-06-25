@@ -332,7 +332,7 @@ while run:
             pygame.mixer.music.set_volume(0.3)
             pygame.mixer.music.play(-1)
             player_y = 42069
-            countdown = 3000
+            countdown = 1200
             player_x = 42069
             collected = []
                         

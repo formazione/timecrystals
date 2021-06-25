@@ -19,18 +19,6 @@ from levels2 import *
 for n, eachmap in enumerate(layout):
     layout[n] = list(layout[n])
 _map = layout[0]
-# _map = [
-# "111111111111111",
-# "1             1",
-# "              1",
-# "          11111",
-# "      11       ",
-# "               ",
-# "  111    111111",
-# " 11111   111111",
-# "111111111111111",
-#     ]
-
 
 
 size = width*Sprite.width, height*Sprite.height
@@ -52,9 +40,6 @@ def blit_tiles(bg="") -> tuple:
 # Load an image
 pos = blit_tiles()
 
-def background(image):
-    house1 = pygame.image.load(image)
-    screen0.blit(house1, (0, 0))
 
 
 def print_map():
@@ -84,26 +69,6 @@ def save_map(levels="levels.txt"):
 
     return text
 
-# def save_map(levels="levels.txt", clear=0):
-#     text = ""
-#     text += "("
-#     for line in _map:
-#         text += f"\"{line}\",\n"
-#     text += "),"
-#     if clear==0:
-#         # it appends the maps
-#         with open(levels, "r") as file:
-#             file = file.read()
-#             file = file.replace("]", "")
-#         with open(levels, "w") as file2:
-#             stringa = f"{file}\n{text}\n]"
-#             file2.write(stringa)
-#     elif clear:
-#         # one map only
-#         with open(levels, "w") as file:
-#             file.write(text)
-
-#     return text
 
 def get_pos() -> tuple:
     mpos = pygame.mouse.get_pos()
@@ -158,7 +123,7 @@ def goto_room(room_num):
     _map = list(layout[room])
     update_screen()
 
-
+clock = pygame.time.Clock()
 while True:
   
   for event in pygame.event.get():
@@ -316,3 +281,4 @@ while True:
 
   screen.blit(screen0, (0, 0))
   pygame.display.flip()
+  clock.tick(60)
