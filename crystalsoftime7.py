@@ -82,7 +82,10 @@ class Player():
         self.rightCol = False
             
     def draw(self):
-        screen.blit(spr_player, (int(self.x), int(self.y) - 16), (self.frame * 32, (not self.faceRight) * 48, 32, 48))
+
+        screen.blit(
+            spr_player, 
+            (int(self.x), int(self.y) - 16), (self.frame * 32, (not self.faceRight) * 48, 32, 48))
         # pygame.draw.rect(display, (0, 255, 0), (int(self.x), int(self.y), 32, 32))
 
 class Terrain():
@@ -121,7 +124,9 @@ class Terrain():
                 elif self.type == 5:
                     player.y += 64
                     pygame.mixer.Sound.play(sfx_crystal)
-                    
+
+                    ################## ripristina questo 9:5 #################
+                    # questo impedisce di saltare in alto quanto c'è una prietra
             elif player.y > self.y + 16 and player.y < self.y + 32:
                 player.y = self.y + 32
                 player.ySpeed = 0

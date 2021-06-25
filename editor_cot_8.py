@@ -11,11 +11,14 @@ class Sprite:
     height = 32
 
 tiles = pygame.image.load("assets\\tiles3.png")
+menu = pygame.image.load("assets\\menu.png")
 
 from levels2 import *
+
+# Convert string to list to modify elements
 for n, eachmap in enumerate(layout):
     layout[n] = list(layout[n])
-_map = list(layout[-1])
+_map = layout[0]
 # _map = [
 # "111111111111111",
 # "1             1",
@@ -61,43 +64,46 @@ def print_map():
     print("),")
 
 
-def change_map(levels="levels.txt"):
+def save_map(levels="levels.txt"):
     """ This changes all the maps with the new ones """
+    global layout
     
     text = "layout = ["
+    # This puts all the tuples of the maps into a list
     for eachmap in layout:
         text += "("
         for line in eachmap:
             text += f"\"{line}\",\n"
         text += "),"
     text += "]"
-
+    print("This is saved into levels2.py")
     # one map only
     with open(levels, "w") as file:
         file.write(text)
+    # os.system(f"""start "" "C:\Program Files\Sublime Text 3\sublime_text.exe" {levels} """)
 
     return text
 
-def save_map(levels="levels.txt", clear=0):
-    text = ""
-    text += "("
-    for line in _map:
-        text += f"\"{line}\",\n"
-    text += "),"
-    if clear==0:
-        # it appends the maps
-        with open(levels, "r") as file:
-            file = file.read()
-            file = file.replace("]", "")
-        with open(levels, "w") as file2:
-            stringa = f"{file}\n{text}\n]"
-            file2.write(stringa)
-    elif clear:
-        # one map only
-        with open(levels, "w") as file:
-            file.write(text)
+# def save_map(levels="levels.txt", clear=0):
+#     text = ""
+#     text += "("
+#     for line in _map:
+#         text += f"\"{line}\",\n"
+#     text += "),"
+#     if clear==0:
+#         # it appends the maps
+#         with open(levels, "r") as file:
+#             file = file.read()
+#             file = file.replace("]", "")
+#         with open(levels, "w") as file2:
+#             stringa = f"{file}\n{text}\n]"
+#             file2.write(stringa)
+#     elif clear:
+#         # one map only
+#         with open(levels, "w") as file:
+#             file.write(text)
 
-    return text
+#     return text
 
 def get_pos() -> tuple:
     mpos = pygame.mouse.get_pos()
@@ -124,19 +130,28 @@ tiles_visible = 0
 editor_mode = 0
 pygame.display.set_caption("Map Editor - Press t for tiles")
 help = """
+
+pythonprogramming.altervista.org
+
+                Commands
+                ========
 t = show tiles
 r = reverse tiles
 s = append tiles to file
 n = save only the last file
 
 0,1,2.... = go into a room
-arrows left and right = iterate the rooms
+arrows left and right = iterate
+               the rooms
+arrow Up => last room
+arrow down => first room
 h = help
+
 """
 room_len = len(layout)
-room = room_len - 1
+room = 0
 print(f"{room_len=}")
-
+menu_visible = 0
 def goto_room(room_num):
     global _map
 
@@ -157,11 +172,13 @@ while True:
             if event.key == pygame.K_LEFT:
                 if room > 0:
                     room -= 1
+                    save_map(levels="levels2.py")
                     # pygame.display.set_caption(f"Room n. {room}")
                 goto_room(room)
             if event.key == pygame.K_RIGHT:
                 if room < room_len - 1:
                     room += 1
+                    save_map(levels="levels2.py")
                 goto_room(room)
 
             if event.key in range(47, 58):
@@ -181,20 +198,19 @@ while True:
             print(event.key, f"{room=}")
 
             # This changes the actual levels
-            if event.key == pygame.K_c:
+            if event.key == pygame.K_c or event.key == pygame.K_s:
                 # I substitute the layout with this new
-                change_map(levels="levels2.py")
-                os.startfile("levels2.py")
-
-
-            # This adds the actual level to the list of levels at the end
-            if event.key == pygame.K_s:
                 save_map(levels="levels2.py")
-                os.startfile("levels2.py")
+                print("Map saved with changes")
+                # os.startfile("levels2.py")
+
 
             if event.key == pygame.K_n:
-                save_map(levels="levels1.txt", clear=1)
-                os.startfile("levels1.txt")
+                layout.append(_map)
+                room_len = len(layout)
+                # print(layout)
+                # save_map(levels="levels1.txt", clear=1)
+                # os.startfile("levels1.txt")
     
             if event.key == pygame.K_k:
                 print("Room map has been copied, press p to paste it when in another room")
@@ -206,6 +222,14 @@ while True:
                 layout[room] = _map
                 update_screen()
 
+            # Go to last room
+            if event.key == pygame.K_UP:
+                room = room_len -1
+                update_screen()
+
+            if event.key == pygame.K_DOWN:
+                room = 0
+                update_screen()
 
             # This shows the tiles ================== TILES MENU ==== t ====
             if event.key == pygame.K_t:
@@ -214,6 +238,15 @@ while True:
                 if tiles_visible:
                     screen0.fill(0)
                     screen0.blit(tiles, (0, 0))
+                else:
+                    update_screen()
+
+            if event.key == pygame.K_h:
+                pygame.display.set_caption("Help")
+                menu_visible = 1 if menu_visible == 0 else 0
+                if menu_visible:
+                    screen0.fill(0)
+                    screen0.blit(menu, (0, 0))
                 else:
                     update_screen()
     
@@ -225,6 +258,12 @@ while True:
             update_screen()
             x, y = pygame.mouse.get_pos()
             screen0.blit(tile, (x-16, y-16))
+
+
+            #################################
+
+            #           This is where the map is changed
+            #################################
 
       if event.type == pygame.MOUSEBUTTONDOWN:
         # if you click when the tiles_visible is on
@@ -256,8 +295,11 @@ while True:
                     x, y = get_pos()
                     print(f"{x=}{y=}")
                     line = list(_map[y])
+                    # Changes the tile
                     line[x] = f"{tile_chosen_number}"
+                    # Reconvert the list into a string
                     _map[y] = "".join(line)
+                    # substitute di string into the layout string of that map
                     layout[room][y] = _map[y]
                     print_map()
                     # screen0.blit(tile, (x * 32, y * 32))
@@ -268,6 +310,7 @@ while True:
             line = list(_map[y])
             line[x] = " "
             _map[y] = "".join(line)
+            layout[room][y] = _map[y]
             print_map()
             update_screen()
 
