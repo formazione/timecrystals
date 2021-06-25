@@ -227,7 +227,8 @@ timer = 0
 countdown = 1200
 run = True
 
-
+room_r = len(layout[room_num])
+room_c = len(layout[room_num][0])
 
 while run:
     ### level generation
@@ -236,33 +237,18 @@ while run:
     remove = []
     player = Player(0, 0)
 
-    for i in range(len(layout[room_num])):
-        for j in range(len(layout[room_num][i])):
+    for i in range(room_r):
+        for j in range(room_c):
             if layout[room_num][i][j] == "P":
                 player = Player(j*32, i*32)
                 load.append(player)
-            if layout[room_num][i][j] == "0":
-                load.append(Terrain(j*32, i*32, 0))
-            if layout[room_num][i][j] == "1":
-                load.append(Terrain(j*32, i*32, 1))
-            if layout[room_num][i][j] == "2":
-                load.append(Terrain(j*32, i*32, 2))
-            if layout[room_num][i][j] == "3":
-                load.append(Terrain(j*32, i*32, 3))
-            if layout[room_num][i][j] == "4":
-                
-                load.append(Terrain(j*32, i*32, 4))
-            if layout[room_num][i][j] == "5":
-                load.append(Terrain(j*32, i*32, 5))
-            # bricks
-            if layout[room_num][i][j] == "6":
-                load.append(Terrain(j*32, i*32, 6))
-            if layout[room_num][i][j] == "7":
-                load.append(Terrain(j*32, i*32, 7))
-            if layout[room_num][i][j] == "C":
+            if layout[room_num][i][j] in "01234567":
+                val = int(layout[room_num][i][j])
+                load.append(Terrain(j*32, i*32, val))
+            elif layout[room_num][i][j] == "C":
                 load.append(Crystal(j*32, i*32, room_num))
-            if layout[room_num][i][j] == "L":
-                load.append(LargeCrystal(j*32, i*32))
+            # elif layout[room_num][i][j] == "L":
+            #     load.append(LargeCrystal(j*32, i*32))
 
     if player not in load and room_num not in (0, 14, 15):
         load.append(player)

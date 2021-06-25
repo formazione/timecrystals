@@ -13,7 +13,8 @@ class Sprite:
 tiles = pygame.image.load("assets\\tiles3.png")
 
 from levels2 import *
-
+for n, eachmap in enumerate(layout):
+    layout[n] = list(layout[n])
 _map = list(layout[-1])
 # _map = [
 # "111111111111111",
@@ -60,7 +61,21 @@ def print_map():
     print("),")
 
 
+def change_map(levels="levels.txt"):
+    """ This changes all the maps with the new ones """
+    text = "["
+    text += "("
+    for eachmap in layout:
 
+        for line in eachmap:
+            text += f"\"{line}\",\n"
+        text += ")]"
+
+    # one map only
+    with open(levels, "w") as file:
+        file.write(text)
+
+    return text
 
 def save_map(levels="levels.txt", clear=0):
     text = ""
@@ -130,11 +145,13 @@ while True:
             if event.key == pygame.K_LEFT:
                 if room > 0:
                     room -= 1
+                    pygame.display.set_caption(f"Room n. {room}")
                 _map = list(layout[room])
                 update_screen()
             if event.key == pygame.K_RIGHT:
                 if room < room_len - 1:
                     room += 1
+                    pygame.display.set_caption(f"Room n. {room}")
                 _map = list(layout[room])
                 update_screen()
 
@@ -215,6 +232,7 @@ while True:
                     line = list(_map[y])
                     line[x] = f"{tile_chosen_number}"
                     _map[y] = "".join(line)
+                    layout[room][y] = _map[y]
                     print_map()
                     # screen0.blit(tile, (x * 32, y * 32))
                     update_screen()

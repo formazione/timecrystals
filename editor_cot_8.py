@@ -13,7 +13,8 @@ class Sprite:
 tiles = pygame.image.load("assets\\tiles3.png")
 
 from levels2 import *
-
+for n, eachmap in enumerate(layout):
+    layout[n] = list(layout[n])
 _map = list(layout[-1])
 # _map = [
 # "111111111111111",
@@ -60,7 +61,22 @@ def print_map():
     print("),")
 
 
+def change_map(levels="levels.txt"):
+    """ This changes all the maps with the new ones """
+    
+    text = "layout = ["
+    for eachmap in layout:
+        text += "("
+        for line in eachmap:
+            text += f"\"{line}\",\n"
+        text += "),"
+    text += "]"
 
+    # one map only
+    with open(levels, "w") as file:
+        file.write(text)
+
+    return text
 
 def save_map(levels="levels.txt", clear=0):
     text = ""
@@ -95,6 +111,7 @@ def update_screen():
     ''' Clear and show tiles '''
     global pos
     screen0.fill(0)
+    pygame.display.set_caption(f"Room n. {room}")
     pos = blit_tiles()
 
 
@@ -105,17 +122,28 @@ def get_tile():
 
 tiles_visible = 0
 editor_mode = 0
-pygame.display.set_caption("Map Editor - Delete Mode")
+pygame.display.set_caption("Map Editor - Press t for tiles")
 help = """
-p = show tiles
+t = show tiles
 r = reverse tiles
 s = append tiles to file
 n = save only the last file
 
+0,1,2.... = go into a room
+arrows left and right = iterate the rooms
+h = help
 """
 room_len = len(layout)
 room = room_len - 1
 print(f"{room_len=}")
+
+def goto_room(room_num):
+    global _map
+
+    _map = list(layout[room])
+    update_screen()
+
+
 while True:
   
   for event in pygame.event.get():
@@ -124,19 +152,21 @@ while True:
           pygame.quit()
     
       if event.type == pygame.KEYDOWN:
-            print(event.key)
 
-            # CHANGE ROOM when you press a key
+            # CHANGE ROOM when you press a key ====== ROOM NAVIGATOR ====
             if event.key == pygame.K_LEFT:
                 if room > 0:
                     room -= 1
-                _map = list(layout[room])
-                update_screen()
+                    # pygame.display.set_caption(f"Room n. {room}")
+                goto_room(room)
             if event.key == pygame.K_RIGHT:
                 if room < room_len - 1:
                     room += 1
-                _map = list(layout[room])
-                update_screen()
+                goto_room(room)
+
+            if event.key in range(47, 58):
+                room = event.key - 48
+                goto_room(room)
 
             # REVERSE THE SCREEN
             if event.key == pygame.K_r:
@@ -148,6 +178,7 @@ while True:
                 update_screen()
                 print("done")
 
+            print(event.key, f"{room=}")
 
             # This changes the actual levels
             if event.key == pygame.K_c:
@@ -165,8 +196,20 @@ while True:
                 save_map(levels="levels1.txt", clear=1)
                 os.startfile("levels1.txt")
     
-            if event.key == pygame.K_p:
-                pygame.display.set_caption("Editor mode")
+            if event.key == pygame.K_k:
+                print("Room map has been copied, press p to paste it when in another room")
+                copied = _map
+                update_screen()
+
+            if event.key == pygame.K_l:
+                _map = copied
+                layout[room] = _map
+                update_screen()
+
+
+            # This shows the tiles ================== TILES MENU ==== t ====
+            if event.key == pygame.K_t:
+                pygame.display.set_caption("Tiles avaiable - Click on one of them")
                 tiles_visible = 1 if tiles_visible == 0 else 0
                 if tiles_visible:
                     screen0.fill(0)
@@ -215,6 +258,7 @@ while True:
                     line = list(_map[y])
                     line[x] = f"{tile_chosen_number}"
                     _map[y] = "".join(line)
+                    layout[room][y] = _map[y]
                     print_map()
                     # screen0.blit(tile, (x * 32, y * 32))
                     update_screen()

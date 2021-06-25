@@ -113,9 +113,7 @@ s = append tiles to file
 n = save only the last file
 
 """
-room_len = len(layout)
-room = room_len - 1
-print(f"{room_len=}")
+
 while True:
   
   for event in pygame.event.get():
@@ -126,16 +124,9 @@ while True:
       if event.type == pygame.KEYDOWN:
             print(event.key)
 
-            # CHANGE ROOM when you press a key
-            if event.key == pygame.K_LEFT:
-                if room > 0:
-                    room -= 1
-                _map = list(layout[room])
-                update_screen()
-            if event.key == pygame.K_RIGHT:
-                if room < room_len - 1:
-                    room += 1
-                _map = list(layout[room])
+            # CHANGE ROOM
+            if event.key>47 or event.key<57:
+                _map = list(layout[event.key - 48])
                 update_screen()
 
             # REVERSE THE SCREEN
@@ -149,18 +140,9 @@ while True:
                 print("done")
 
 
-            # This changes the actual levels
-            if event.key == pygame.K_c:
-                # I substitute the layout with this new
-                change_map(levels="levels2.py")
-                os.startfile("levels2.py")
-
-
-            # This adds the actual level to the list of levels at the end
             if event.key == pygame.K_s:
                 save_map(levels="levels2.py")
                 os.startfile("levels2.py")
-
             if event.key == pygame.K_n:
                 save_map(levels="levels1.txt", clear=1)
                 os.startfile("levels1.txt")
