@@ -32,6 +32,7 @@ class Player():
         self.y = y
         self.xSpeed = 0
         self.ySpeed = 0
+        # credo che siano 1 quanto c'è un tile sotto, sopra...
         self.bottomCol = False
         self.topCol = False
         self.leftCol = False
@@ -47,18 +48,19 @@ class Player():
 
         if self.ySpeed < 8:
             self.ySpeed += 0.5
-        if self.bottomCol:
+        if self.bottomCol: # quando c'è un tile sotto non cade
             self.ySpeed = 0
-            if self.xSpeed > 0:
-                self.xSpeed -= 0.3
-            elif self.xSpeed < 0:
-                self.xSpeed += 0.3
-            if abs(self.xSpeed) < 0.3:
+            if self.xSpeed > 0: # decelera quando cade su un tile andando verso destra
+                self.xSpeed -= 0.2 # [[[[[[[[ 0.3 valore originale ]]]]]]]]
+            elif self.xSpeed < 0: # se va verso sinistra decelera con un + perchè...
+                self.xSpeed += 0.2 # CAMBIO!!!! #######>>>> 0.3 valore originale
+            if abs(self.xSpeed) < 0.3: # quando la velocità è inferiore a 0.3 si ferma
                 self.xSpeed = 0
 
         if self.timer <= 0:
+            # salta solo ce è sopra un tile
             if keys[pygame.K_UP] and self.bottomCol:
-                self.ySpeed = -8
+                self.ySpeed = -8 # [[[[[[[[[[[[[[[[[[[-8 valore originale]]]]]]]]]]]]]]]]]]]
             if keys[pygame.K_LEFT] and self.xSpeed > -3:
                 self.xSpeed -= 0.2
                 self.faceRight = False
@@ -85,7 +87,9 @@ class Player():
 
         screen.blit(
             spr_player, 
-            (int(self.x), int(self.y) - 16), (self.frame * 32, (not self.faceRight) * 48, 32, 48))
+            (int(self.x), int(self.y) - 16),
+            # Here is where he gets the sprite from the spritesheet
+            (self.frame * 32, (not self.faceRight) * 48, 32, 48))
         # pygame.draw.rect(display, (0, 255, 0), (int(self.x), int(self.y), 32, 32))
 
 class Terrain():
@@ -95,7 +99,7 @@ class Terrain():
         self.col = False
         self.type = Type
     def update(self):
-
+        # Se il giocatore si trova sopra ad un tile... cos'è self.col
         if player.x + 32 > self.x and player.x < self.x + 32 and not self.col:
             if player.y + 32 > self.y and player.y + 32 < self.y + 16:
                 player.y = self.y - 32
@@ -114,7 +118,7 @@ class Terrain():
 
                 # This is to jump
                 
-                elif self.type == 4:
+                elif self.type == 4: 
                     player.ySpeed = -10
                     player.bottomCol = False
                     pygame.mixer.Sound.play(sfx_crystal)
@@ -127,6 +131,8 @@ class Terrain():
 
                     ################## ripristina questo 9:5 #################
                     # questo impedisce di saltare in alto quanto c'è una prietra
+            # Se ti trovi più dell'altezz
+            # altezza del giocatore maggiore dell'altezza del tile e minore de
             elif player.y > self.y + 16 and player.y < self.y + 32:
                 player.y = self.y + 32
                 player.ySpeed = 0
@@ -235,6 +241,12 @@ run = True
 room_r = len(layout[room_num])
 room_c = len(layout[room_num][0])
 
+def music_on():
+    music = pygame.mixer.music.load("assets/swinging in the night sky2.wav")
+    pygame.mixer.music.set_volume(0.3)
+    pygame.mixer.music.play(-1)
+
+
 while run:
     ### level generation
 
@@ -328,17 +340,15 @@ while run:
         if room_num == 0 and (keys[pygame.K_SPACE] or keys[pygame.K_LEFT] or keys[pygame.K_RIGHT] or keys[pygame.K_UP] or keys[pygame.K_DOWN]):
             room_num += 1
             alive = False
-            music = pygame.mixer.music.load("assets/swinging in the night sky.wav")
-            pygame.mixer.music.set_volume(0.3)
-            pygame.mixer.music.play(-1)
+
             player_y = 42069
             countdown = 1200
             player_x = 42069
             collected = []
                         
-        pygame.draw.line(screen, (200, 255, 255), (239, 160 - (countdown // 6)), (239, -4), 6)
-        pygame.draw.circle(screen, (200, 255, 255), (240, 160 - (countdown // 6)), 8)
-        pygame.draw.circle(screen, (255, 255, 255), (240, 164 - (countdown // 6)), 4)
+        pygame.draw.line(screen, (200, 255, 255), (239, 160 - (countdown // 5)), (239, -4), 6)
+        pygame.draw.circle(screen, (200, 255, 255), (240, 160 - (countdown // 5)), 8)
+        pygame.draw.circle(screen, (255, 255, 255), (240, 164 - (countdown // 5)), 4)
         display.blit(pygame.transform.scale(screen, (480*2, 288*2)),(0, 0))
         pygame.display.flip()
 
