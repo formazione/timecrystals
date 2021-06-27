@@ -19,6 +19,7 @@ spr_number = pygame.image.load("assets/number.png").convert_alpha()
 background = pygame.image.load("assets/background.png").convert()
 title = pygame.image.load("assets/title.png").convert()
 
+
 sfx_crash = pygame.mixer.Sound("assets/crash.wav")
 sfx_crash.set_volume(0.2)
 sfx_collect = pygame.mixer.Sound("assets/collect.wav")
