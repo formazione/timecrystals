@@ -1,23 +1,6 @@
 import pygame, time, random, math
 from pygame.locals import *
 
-
-''' Crystals of time posts
-The original game: https://youtu.be/BKxd3z-GVeE
-tutorial 1 https://youtu.be/LHTPVH1PXcA
-tutorial 2 https://youtu.be/bgz1MLbvM1U
-tutorial 3 https://youtu.be/bgz1MLbvM1U
-version 1.5 https://youtu.be/PelxCis1B6Y
-version 1.6 https://youtu.be/q-0yOIVsl-g
-version 2.1 https://youtu.be/LAJgnaX8tUE
-
-Itch.io
-
-githun
-
-
-'''
-
 pygame.init()
 pygame.display.init()
 pygame.mixer.init()
@@ -26,8 +9,8 @@ display = pygame.display.set_mode((480*2, 288*2))
 screen = pygame.Surface((480, 288))
 pygame.display.set_caption("Crystals of Time by SmellyFrog")
 
-spr_player = pygame.image.load("assets/lily.png").convert_alpha()
-# ======================= IMAGES ==============================
+spr_player = pygame.image.load("assets/lily2.png").convert_alpha()
+# spr_player = pygame.transform.scale(spr_player, (160, 160))
 player_rect = spr_player.get_rect()
 spr_tiles = pygame.image.load("assets/tiles3.png").convert_alpha()
 NUM_OF_TILES = spr_tiles.get_size()[0] // 32
@@ -38,11 +21,16 @@ spr_number = pygame.image.load("assets/number.png").convert_alpha()
 background = pygame.image.load("assets/background.png").convert()
 title = pygame.image.load("assets/title.png").convert()
 
-# ==================== SOUNDS ========================
+
 sfx_crash = pygame.mixer.Sound("assets/crash.wav")
 sfx_crash.set_volume(0.2)
 sfx_collect = pygame.mixer.Sound("assets/collect.wav")
 sfx_crystal = pygame.mixer.Sound("assets/crystal.wav")
+
+
+def play(song):
+    pygame.mixer.music.load(song)
+    pygame.mixer.music.play()
 
 # class Player(pygame.sprite.Sprite):
 class Player():
@@ -65,6 +53,7 @@ class Player():
 
         self.x += self.xSpeed
         self.y += self.ySpeed
+
 
         if self.ySpeed < 8:
             self.ySpeed += 0.5
@@ -107,9 +96,9 @@ class Player():
 
         screen.blit(
             spr_player, 
-            (int(self.x), int(self.y) - 16),
+            (int(self.x), int(self.y) - 8),
             # Here is where he gets the sprite from the spritesheet
-            (self.frame * 32, (not self.faceRight) * 48, 32, 48))
+            (self.frame * 16, (not self.faceRight) * 24, 16, 24))
         # pygame.draw.rect(display, (0, 255, 0), (int(self.x), int(self.y), 32, 32))
 
 class Terrain():
@@ -118,63 +107,67 @@ class Terrain():
         self.y = y
         self.col = False
         self.type = Type
+
+    def bottom_collision(self):
+        if player.y + 16 > self.y and player.y + 16 < self.y + 16:
+            player.y = self.y - 16
+            player.ySpeed = 0
+            player.bottomCol = True
+            # self.col = True
+            self.what_tile_youre_on()
+
+
+    def what_tile_youre_on(self):
+            if self.type == 3:
+                player.x -= 96
+                pygame.mixer.Sound.play(sfx_crystal)
+
+            
+            elif self.type == 4: 
+                player.ySpeed = -10
+                player.bottomCol = False
+                pygame.mixer.Sound.play(sfx_crystal)
+        
+            
+            elif self.type == 5:
+                player.y += 64
+                pygame.mixer.Sound.play(sfx_crystal)
+
     def update(self):
         # Se il giocatore si trova sopra ad un tile... cos'è self.col
         # quand'è che self.col = 1???
-        player_on_edge = player.x + 32 > self.x
-        not_beyond_tile = player.x < self.x + 32
-        if player_on_edge and not_beyond_tile and not self.col: # collition with self?
-            # se il bottom del player è maggiore della base del tile, ma minore della metà del tile
-            if player.y + 32 > self.y and player.y + 32 < self.y + 16:
-                # il player viene piazzato esattamente sopra il tile
-                player.y = self.y - 32
-                player.ySpeed = 0
-                player.bottomCol = True # Collition with the bottom, the player is on the terrain
-                self.col = True #Vuol dire che il tile è in contatto con il player
+        player_on_tile = player.x + 16 > self.x and player.x < self.x + 32 ######
+        if player_on_tile and not self.col:
+            self.bottom_collision()
+            self.top_collision()
+            self.right_collision()
+            self.left_collision()
+        self.col = False
+            
 
 
-
-        # Tipes of tiles
-
-                # Fire, makes you die
-                if self.type == 3:
-                    player.x -= 96
-                    pygame.mixer.Sound.play(sfx_crystal)
-
-                # This is to jump
-                
-                elif self.type == 4: 
-                    player.ySpeed = -10
-                    player.bottomCol = False
-                    pygame.mixer.Sound.play(sfx_crystal)
-                
-                # This make you go down
-                
-                elif self.type == 5:
-                    player.y += 64
-                    pygame.mixer.Sound.play(sfx_crystal)
-
-                    ################## ripristina questo 9:5 #################
-                    # questo impedisce di saltare in alto quanto c'è una prietra
-            # Se ti trovi più dell'altezz
-            # altezza del giocatore maggiore dell'altezza del tile e minore de
-            elif player.y > self.y + 16 and player.y < self.y + 32:
+    def top_collision(self):
+            if player.y > self.y + 16 and player.y < self.y + 32:
                 player.y = self.y + 32
                 player.ySpeed = 0
                 player.topCol = True
-                self.col = True
-        if player.y + 32 > self.y and player.y < self.y + 32 and not self.col:
-            if player.x + 32 > self.x and player.x + 32 < self.x + 16:
+                # self.col = True
+
+    def right_collision(self):
+        if player.y + 16 > self.y and player.y < self.y + 32:# and not self.col:
+            if player.x + 16 > self.x and player.x + 16 < self.x + 16:
                 player.x = self.x - 32
                 player.xSpeed = -0.4
                 player.rightCol = True
-                self.col = True
-            elif player.x > self.x + 16 and player.x < self.x + 32:
-                player.x = self.x + 32
+                # self.col = True
+
+    def left_collision(self):
+        if player.y + 16 > self.y and player.y < self.y + 32:# and not self.col:
+            if player.x > self.x + 16 and player.x < self.x + 16:
+                player.x = self.x + 16
                 player.xSpeed = 0.4
                 player.leftCol = True
-                self.col = True
-        self.col = False
+                # self.col = True
         
     def draw(self):
         # this blits the tiles at the position, but starting with 6*32 end ending 32 further
@@ -189,8 +182,9 @@ class Crystal():
         global countdown
         if ((player.x - self.x)**2 + (player.y - self.y)**2)**0.5 < 32 and countdown > 0:
             collected.append((self.x, self.y, room_num))
-            player.timer = 15
-            player.xSpeed = 0
+            # player.timer = 15
+            # player.xSpeed = 0
+            
             pygame.mixer.Sound.play(sfx_collect)
         if (self.x, self.y, self.num) in collected:
             remove.append(self)
@@ -262,14 +256,14 @@ player_x = 42069
 collected = []
 room_num = 0
 timer = 0
-countdown = 1200
+countdown = 2400
 run = True
 
 room_r = len(layout[room_num])
 room_c = len(layout[room_num][0])
 
 def music_on():
-    music = pygame.mixer.music.load("assets/swinging in the night sky2.wav")
+    music = pygame.mixer.music.load("assets/swinging in the night sky.wav")
     pygame.mixer.music.set_volume(0.3)
     pygame.mixer.music.play(-1)
 

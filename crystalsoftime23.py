@@ -65,6 +65,7 @@ class Player():
 
         self.x += self.xSpeed
         self.y += self.ySpeed
+        
 
         if self.ySpeed < 8:
             self.ySpeed += 0.5
@@ -285,13 +286,15 @@ while run:
     player = Player(0, 0)
 
     for i in range(room_r):
-        for j in range(room_c):
+        for j in range(room_c): # ================= Put the plauer in position
             if layout[room_num][i][j] == "P":
                 player = Player(j*32, i*32)
                 load.append(player)
+                # ========================================== Here go the tiles
             if layout[room_num][i][j] in str_num_tiles:
                 val = int(layout[room_num][i][j])
                 load.append(Terrain(j*32, i*32, val))
+                # ======================================= CRYSTAL
             elif layout[room_num][i][j] == "C":
                 load.append(Crystal(j*32, i*32, room_num))
             # elif layout[room_num][i][j] == "L":

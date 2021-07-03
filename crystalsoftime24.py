@@ -13,19 +13,36 @@ version 2.1 https://youtu.be/LAJgnaX8tUE
 
 Itch.io
 
-githun
+github
+
+
+Index:
+- init()
+- screen and display surfaces
+- load images and sounds
+- Player class
 
 
 '''
 
-pygame.init()
-pygame.display.init()
-pygame.mixer.init()
+def init():
+    pygame.init()
+    pygame.display.init()
+    pygame.mixer.init()
 
+
+init()
+
+# DISPLAY SURFACES
+# DISPLAY IS THE MAIN SURFACE
+# SCREEN IS THE SURFACE TO BLIT ON DISPLAY SCALED
+
+# DISPLAY IS 2x SCREEN
 display = pygame.display.set_mode((480*2, 288*2))
 screen = pygame.Surface((480, 288))
 pygame.display.set_caption("Crystals of Time by SmellyFrog")
 
+# ================ I M A G E S =============== LOAD into Surfaces =====
 spr_player = pygame.image.load("assets/lily.png").convert_alpha()
 # ======================= IMAGES ==============================
 player_rect = spr_player.get_rect()
@@ -44,7 +61,7 @@ sfx_crash.set_volume(0.2)
 sfx_collect = pygame.mixer.Sound("assets/collect.wav")
 sfx_crystal = pygame.mixer.Sound("assets/crystal.wav")
 
-# class Player(pygame.sprite.Sprite):
+# THE SPRITE FOR THE PLAYER
 class Player():
     def __init__(self, x, y):
         # super(Player, self).__init__()
@@ -63,11 +80,16 @@ class Player():
 
     def update(self):
 
+        # this moves the player: the xSpeed is 0, but if you
         self.x += self.xSpeed
         self.y += self.ySpeed
+        
 
         if self.ySpeed < 8:
             self.ySpeed += 0.5
+
+
+        # COLLISION WITH A TILE TO THE BOTTO
         if self.bottomCol: # quando c'è un tile sotto non cade
             self.ySpeed = 0
             if self.xSpeed > 0: # decelera quando cade su un tile andando verso destra
@@ -77,16 +99,24 @@ class Player():
             if abs(self.xSpeed) < 0.3: # quando la velocità è inferiore a 0.3 si ferma
                 self.xSpeed = 0
 
-        if self.timer <= 0:
-            # salta solo ce è sopra un tile
-            if keys[pygame.K_UP] and self.bottomCol:
-                self.ySpeed = -8 # [[[[[[[[[[[[[[[[[[[-8 valore originale]]]]]]]]]]]]]]]]]]]
-            if keys[pygame.K_LEFT] and self.xSpeed > -3:
-                self.xSpeed -= 0.2
-                self.faceRight = False
-            if keys[pygame.K_RIGHT] and self.xSpeed < 3:
-                self.xSpeed += 0.2
-                self.faceRight = True
+
+
+        # timer is used to stop the player when collects a crystal (I do not want it)
+        # if self.timer <= 0:
+        #     #                        JUMP
+        if keys[pygame.K_UP] and self.bottomCol:
+            self.ySpeed = -8
+
+        if keys[pygame.K_LEFT] and self.xSpeed > -3:
+            self.xSpeed -= 0.2
+            self.faceRight = False
+    
+        if keys[pygame.K_RIGHT] and self.xSpeed < 3:
+            self.xSpeed += 0.2
+            self.faceRight = True
+
+
+
 
         if keys[pygame.K_RIGHT] or keys[pygame.K_LEFT]:
             self.frame = timer % 16 < 8
@@ -189,7 +219,15 @@ class Crystal():
         global countdown
         if ((player.x - self.x)**2 + (player.y - self.y)**2)**0.5 < 32 and countdown > 0:
             collected.append((self.x, self.y, room_num))
-            player.timer = 15
+            
+            # DO not want the player to stop when collects a crystal (it is annoying)
+            # player.timer = 15
+            # but I do want countdown to go back
+            
+            # You make the countdown to go back 2.7.21 8:39
+            countdown += 150
+            
+
             player.xSpeed = 0
             pygame.mixer.Sound.play(sfx_collect)
         if (self.x, self.y, self.num) in collected:
@@ -227,19 +265,25 @@ class LargeCrystal():
         if not self.alive:
             self.winCountdown -= 1
             if self.winCountdown <= 0 and countdown > 0:
-                alive = False
-                room_num = 0
-                player_y = 42069
-                countdown = 2400
-                player_x = 42069
-                collected.clear()
-
+                game_over()
             
     def draw(self):
         if not self in remove:
             screen.blit(spr_crystal2, (int(self.x), int(self.y)), (self.timer // 32 * 64, 0, 64, 96))
 
-        
+
+
+def game_over():
+    """ Call this when the player game ends """
+    alive = False
+    room_num = 0
+    player_y = 42069
+    countdown = 2400
+    player_x = 42069
+    collected.clear()
+
+
+   
 '''
 P is the player
 0 is the grass
@@ -285,13 +329,15 @@ while run:
     player = Player(0, 0)
 
     for i in range(room_r):
-        for j in range(room_c):
+        for j in range(room_c): # ================= Put the plauer in position
             if layout[room_num][i][j] == "P":
                 player = Player(j*32, i*32)
                 load.append(player)
+                # ========================================== Here go the tiles
             if layout[room_num][i][j] in str_num_tiles:
                 val = int(layout[room_num][i][j])
                 load.append(Terrain(j*32, i*32, val))
+                # ======================================= CRYSTAL
             elif layout[room_num][i][j] == "C":
                 load.append(Crystal(j*32, i*32, room_num))
             # elif layout[room_num][i][j] == "L":
