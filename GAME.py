@@ -282,12 +282,19 @@ class Crystal():
         if (self.x, self.y, self.num) in collected:
             remove.append(self)
 
-            
     def draw(self):
         if not self in remove:
-            screen.blit(spr_crystal1, (int(self.x), int(self.y) + math.sin(timer / 16) * 16), ((timer % 16 < 8) * 32, 0, 32, 32))
-            screen.blit(ball1, ((int(self.x) + math.cos(timer / 16) * 16), int(self.y) + math.sin(timer / 16) * 16), ((timer % 16 < 8) * 32, 0, 32, 32))
-            screen.blit(ball2, ((int(self.x) - math.cos(timer / 16) * 16), int(self.y) + math.cos(timer / 16) * 16), ((timer % 16 < 8) * 32, 0, 32, 32))
+            screen.blit(spr_crystal1,(int(self.x), int(self.y) + math.sin(timer*3 / 32) * 16), ((timer % 16 < 8) * 32, 0, 32, 32))
+            screen.blit(ball1, ((int(self.x) + math.cos(timer / 32) * random.randrange(8, 16, 8)), int(self.y) + math.sin(timer / 16) * 16), ((timer % 16 < 16) * 32, 0, 32, 32))
+            # screen.blit(ball2, ((int(self.x) - math.cos(timer / 8) * 16), int(self.y) + math.cos(timer / 16) * 16), ((timer % 16 < 8) * 32, 0, 32, 32))
+
+
+# Patterns big balls            
+    # def draw(self):
+    #     if not self in remove:
+    #         screen.blit(spr_crystal1, (int(self.x), int(self.y) + math.sin(timer / 16) * 16), ((timer % 16 < 8) * 32, 0, 32, 32))
+    #         screen.blit(ball1, ((int(self.x) + math.cos(timer / 16) * 16), int(self.y) + math.sin(timer / 16) * 16), ((timer % 16 < 8) * 32, 0, 32, 32))
+    #         screen.blit(ball2, ((int(self.x) - math.cos(timer / 16) * 16), int(self.y) + math.cos(timer / 16) * 16), ((timer % 16 < 8) * 32, 0, 32, 32))
 
 class LargeCrystal():
     def __init__(self, x, y):
