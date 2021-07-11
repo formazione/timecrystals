@@ -1,5 +1,52 @@
 import pygame, time, random, math
 from pygame.locals import *
+from levels.converter import *
+
+
+layout = convert_level3_to_list()
+''' v- 2.5
+levels are in level3.py
+
+Now the level3.py file contains rooms in this format
+
+layout = [(
+    '01 __ 01 01 01 01 01 01 01 01 01 01 01 01 01',
+    '01 __ __ __ __ __ __ __ __ 01 01 __ __ __ __',
+    '01 __ __ __ __ __ __ __ __ 01 01 __ __ __ __',
+    '01 __ __ __ __ __ __ __ __ 01 01 04 __ __ __',
+    '06 06 06 07 __ __ __ __ __ __ __ __ __ __ __',
+    '06 __ __ __ __ __ __ __ __ __ __ __ __ __ __',
+    '02 __ __ __ __ __ __ __ __ __ __ __ __ __ __',
+    '02 __ __ __ __ __ __ __ __ __ __ __ __ __ __',
+    '01 01 01 01 __ __ __ __ __ __ __ __ __ __ __',
+    ),
+
+(
+    '01 __ 01 01 01 01 01 01 01 01 01 01 01 01 01',
+    '01 __ __ __ __ __ __ __ __ 01 01 __ __ __ __',
+    '01 __ __ __ __ __ __ __ __ 01 01 __ __ __ __',
+    '01 __ __ __ __ __ __ __ __ 01 01 04 __ __ __',
+    '06 06 06 07 __ __ __ __ __ __ __ __ __ __ __',
+    '06 __ __ __ __ __ __ __ __ __ __ __ __ __ __',
+    '02 __ __ __ __ __ __ __ __ __ __ __ __ __ __',
+    '02 __ __ __ __ __ __ __ __ __ __ __ __ __ __',
+    '01 01 01 01 __ __ __ __ __ __ __ __ __ __ __',
+    ),
+
+]
+so that we can use up to 99 tiles (but to any
+number indeed, the 2 digit are just for esthetic,
+so that you can see the structure even in the
+list mode)
+
+
+they are converted in old format
+['1', ' ', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1'], ['1', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '1', '1', 'CC', ' ', ' ', ' '],
+by convert_level03 module and convert_level3_to_list
+
+'''
+
+
 
 
 ''' Crystals of time posts
@@ -46,7 +93,7 @@ pygame.display.set_caption("Crystals of Time by SmellyFrog")
 spr_player = pygame.image.load("assets/lily.png").convert_alpha()
 # ======================= IMAGES ==============================
 player_rect = spr_player.get_rect()
-spr_tiles = pygame.image.load("assets/tiles3.png").convert_alpha()
+spr_tiles = pygame.image.load("assets/tiles4.png").convert_alpha()
 NUM_OF_TILES = spr_tiles.get_size()[0] // 32
 spr_crystal1 = pygame.image.load("assets/crystal.png").convert_alpha()
 spr_crystal2 = pygame.image.load("assets/crystal2.png").convert_alpha()
@@ -54,12 +101,14 @@ spr_particle = pygame.image.load("assets/particles.png").convert_alpha()
 spr_number = pygame.image.load("assets/number.png").convert_alpha()
 background = pygame.image.load("assets/background.png").convert()
 title = pygame.image.load("assets/title.png").convert()
-
+ball1 = pygame.image.load("assets/ball1.png").convert_alpha()
+ball2 = pygame.image.load("assets/ball2.png").convert_alpha()
 # ==================== SOUNDS ========================
 sfx_crash = pygame.mixer.Sound("assets/crash.wav")
 sfx_crash.set_volume(0.2)
 sfx_collect = pygame.mixer.Sound("assets/collect.wav")
 sfx_crystal = pygame.mixer.Sound("assets/crystal.wav")
+sfx_time = pygame.mixer.Sound("assets/hat.wav")
 
 # THE SPRITE FOR THE PLAYER
 class Player():
@@ -236,9 +285,9 @@ class Crystal():
             
     def draw(self):
         if not self in remove:
-            screen.blit(spr_crystal1,
-                (int(self.x), int(self.y) + math.sin(timer*3 / 32) * 16), ((timer % 16 < 8) * 32, 0, 32, 32))
-
+            screen.blit(spr_crystal1, (int(self.x), int(self.y) + math.sin(timer / 16) * 16), ((timer % 16 < 8) * 32, 0, 32, 32))
+            screen.blit(ball1, ((int(self.x) + math.cos(timer / 16) * 16), int(self.y) + math.sin(timer / 16) * 16), ((timer % 16 < 8) * 32, 0, 32, 32))
+            screen.blit(ball2, ((int(self.x) - math.cos(timer / 16) * 16), int(self.y) + math.cos(timer / 16) * 16), ((timer % 16 < 8) * 32, 0, 32, 32))
 
 class LargeCrystal():
     def __init__(self, x, y):
@@ -294,11 +343,6 @@ C diamond
 3 danger stone
 '''
 
-# THE LEVELS ARE HERE, they
-# are created by this program with 's'
-from levels2 import *
-
-
 
 
 player_y = 42069
@@ -313,14 +357,20 @@ room_r = len(layout[room_num])
 room_c = len(layout[room_num][0])
 
 def music_on():
-    music = pygame.mixer.music.load("assets/swinging in the night sky2.wav")
+    music = pygame.mixer.music.load("assets/music.ogg")
     pygame.mixer.music.set_volume(0.3)
     pygame.mixer.music.play(-1)
+
+
+def tik_tok():
+    ''' rythic sound that makes you feel the time that is passing'''
+    if countdown % 29 == 0:
+        pygame.mixer.Sound.play(sfx_time)
 
 str_num_tiles = [str(x) for x in range(NUM_OF_TILES)]
 str_num_tiles = "".join(str_num_tiles)
 
-
+# music_on()
 while run:
     ### level generation
 
@@ -330,15 +380,15 @@ while run:
 
     for i in range(room_r):
         for j in range(room_c): # ================= Put the plauer in position
-            if layout[room_num][i][j] == "P":
-                player = Player(j*32, i*32)
-                load.append(player)
+            # if layout[room_num][i][j] == "P":
+            #     player = Player(j*32, i*32)
+            #     load.append(player)
                 # ========================================== Here go the tiles
             if layout[room_num][i][j] in str_num_tiles:
                 val = int(layout[room_num][i][j])
                 load.append(Terrain(j*32, i*32, val))
                 # ======================================= CRYSTAL
-            elif layout[room_num][i][j] == "C":
+            elif layout[room_num][i][j] == "CC":
                 load.append(Crystal(j*32, i*32, room_num))
             # elif layout[room_num][i][j] == "L":
             #     load.append(LargeCrystal(j*32, i*32))
@@ -408,6 +458,8 @@ while run:
             alive = False
 
         # counter
+
+        tik_tok()
 
         if countdown > 0 and countdown < 1500 and room_num >= 1:
             for i in range(len(str(countdown))):
