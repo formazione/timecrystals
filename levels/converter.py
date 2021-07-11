@@ -50,8 +50,8 @@ def str_to_num():
         # iterate each line of the room (room is made of 9 lines)
         for num_line, line in enumerate(room):
             for num_item, item in enumerate(line):
-                if item not in "CC":
-                    if item == "__":
+                if item not in "C":
+                    if item == "_":
                         layout[num_room][num_line][num_item] = " "
                     else:
                         layout[num_room][num_line][num_item] = str(int(item))
