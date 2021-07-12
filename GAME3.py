@@ -4,29 +4,6 @@ from pygame.locals import *
 # are created by this program with 's'
 from levels2b import *
 
-''' Crystals of time posts
-The original game: https://youtu.be/BKxd3z-GVeE
-tutorial 1 https://youtu.be/LHTPVH1PXcA
-tutorial 2 https://youtu.be/bgz1MLbvM1U
-tutorial 3 https://youtu.be/bgz1MLbvM1U
-version 1.5 https://youtu.be/PelxCis1B6Y
-version 1.6 https://youtu.be/q-0yOIVsl-g
-version 2.1 https://youtu.be/LAJgnaX8tUE
-
-Itch.io
-
-github
-
-
-Index:
-- init()
-- screen and display surfaces
-- load images and sounds
-- Player class
-
-
-'''
-
 def init():
     pygame.init()
     pygame.display.init()
@@ -344,6 +321,7 @@ while run:
     remove = []
     player = Player(0, 0)
 
+
     for i in range(room_r):
         for j in range(room_c): # ================= Put the plauer in position
             if layout[room_num][i][j] == "P":
@@ -356,8 +334,8 @@ while run:
                 # ======================================= CRYSTAL
             elif layout[room_num][i][j] == "C":
                 load.append(Crystal(j*32, i*32, room_num))
-            # elif layout[room_num][i][j] == "L":
-            #     load.append(LargeCrystal(j*32, i*32))
+            elif layout[room_num][i][j] == "L":
+                load.append(LargeCrystal(j*32, i*32))
 
     if player not in load and room_num not in (0, 14, 15):
         load.append(player)
@@ -365,6 +343,7 @@ while run:
     if player_y != 42069:
         player.y = player_y
         player.x = player_x
+
 
 
     

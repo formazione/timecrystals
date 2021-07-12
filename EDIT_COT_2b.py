@@ -32,9 +32,9 @@ def blit_tiles(bg="") -> tuple:
     for y, line in enumerate(_map): # y is the number of the line
         for x, str_num in enumerate(line): # x is the number of the column
             if str_num.isdigit():
-                # the image, the position on the screen, the part of the image
-                # tup.append([tiles, (x*32, y*32), (int(str_num) * 32, 0, 32, 32)])
-                screen0.blit(tiles, (x*32, y*32), (int(str_num) * 32, 0, 32, 32))
+                # takes a part of the tilesheet based on the number
+                if int(str_num) < NUM_OF_TILES:
+                    screen0.blit(tiles, (x*32, y*32), (int(str_num) * 32, 0, 32, 32))
             elif str_num == "C":
                 screen0.blit(diamond, (x*32, y*32))
     screen0.blit(tiles, (0, 320))
@@ -136,10 +136,10 @@ def position_tile(symbol):
     """ get the x and y and put in the map list the symbol for that tile """
     message("You positioned a tile in this room")
     x, y = get_pos()
-    line = list(_map[y])
-    line[x] = symbol
-    _map[y] = "".join(line)
-    layout[room][y] = _map[y]
+    # line = list(_map[y])
+    # line[x] = symbol
+    # _map[y] = "".join(line)
+    layout[room][y] = symbol
     update_screen()
 
 
