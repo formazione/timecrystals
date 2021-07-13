@@ -8,3 +8,5 @@ git clone --branch cotb2 https://github.com/formazione/timecrystals.git
 Follow the progress in my blog
 
 https://pythonprogramming.altervista.org/
+
+![](https://pythonprogramming.altervista.org/wp-content/uploads/2020/08/cropped-python_pygame.png)
