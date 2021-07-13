@@ -22,7 +22,8 @@ screen = pygame.display.set_mode(DOUBLE_SIZE)
 screen0 = pygame.Surface((width*Sprite.width, height*Sprite.height + 64))
 
 background = pygame.image.load("assets\\background.png")
-
+fx_tik = pygame.mixer.Sound("assets/tik.ogg")
+fx_whip = pygame.mixer.Sound("assets/whip.ogg")
 
 def blit_tiles(bg="") -> tuple:
     """ blit on a secundary surface first """
@@ -142,8 +143,10 @@ def position_tile(symbol):
     layout[room][y] = symbol
     update_screen()
 
-
-tile = pygame.Surface((0, 0))
+tile_chosen_number = 0
+rect_tile = (0 * 32, 0, 32, 32)
+tile = tiles.subsurface(rect_tile)
+# tile = pygame.Surface((0, 0))
 clock = pygame.time.Clock()
 while True:
   
@@ -244,25 +247,38 @@ while True:
 
 
       if get_pos()[1] == 10:
+          # if you are in the 10th row you can pick a tile
           x = get_pos()[0]
-          if x < NUM_OF_TILES:
-              rect_tile = (x * 32, 0, 32, 32)
-              tile = tiles.subsurface(rect_tile)
-              tile_chosen_number = x
+          # when you press a button
+          if pygame.mouse.get_pressed()[0]:
+            # prevent from clicking beyond tiles
+              if x < NUM_OF_TILES:
+                  rect_tile = (x * 32, 0, 32, 32)
+                  tile = tiles.subsurface(rect_tile)
+                  tile_chosen_number = x
+                  pygame.mixer.Sound.play(fx_tik)
+
 
       if get_pos()[1] < 9:
+          # Clicking the left mouse button you place a tile
           if pygame.mouse.get_pressed()[0]:
               x, y = get_pos()
+              if layout[room][y][x] != f"{tile_chosen_number}":
+                pygame.mixer.Sound.play(fx_tik)
               layout[room][y][x] = f"{tile_chosen_number}"
               update_screen()
 
           if pygame.mouse.get_pressed()[1]:
               x, y = get_pos()
+              if layout[room][y][x] != f"C":
+                pygame.mixer.Sound.play(fx_tik)
               layout[room][y][x] = "C"
               update_screen()
 
           if pygame.mouse.get_pressed()[2]:
               x, y = get_pos()
+              if layout[room][y][x] != " ":
+                pygame.mixer.Sound.play(fx_whip)
               layout[room][y][x] = " "
               update_screen()
 
