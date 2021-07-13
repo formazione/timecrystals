@@ -326,7 +326,7 @@ def music_on():
 
 # str_num_tiles = [str(x) for x in range(NUM_OF_TILES)]
 # str_num_tiles = "".join(str_num_tiles)
-
+music_on()
 
 while run:
     ### level generation
