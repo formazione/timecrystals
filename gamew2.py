@@ -79,10 +79,8 @@ sfx_collect = pygame.mixer.Sound("sounds/collect.wav")
 sfx_crystal = pygame.mixer.Sound("sounds/crystal.wav")
 
 # THE SPRITE FOR THE PLAYER
-# class Player(pygame.sprite.Sprite):
-class Player:
+class Player():
     def __init__(self, x, y):
-        # super(Player, self).__init__()
         # super(Player, self).__init__()
         self.x = x
         self.y = y
@@ -142,6 +140,8 @@ class Player:
             self.faceRight = True
             self.frame = (timer % 16 < 8) # is 1 or 0
 
+        if keys[pygame.K_s]:
+            game_over()
             
         # else:
         #     self.frame = 0 # Idle frame
@@ -165,7 +165,7 @@ class Player:
             (self.frame * 32, (not self.faceRight) * 32, 32, 32))
         # pygame.draw.rect(display, (0, 255, 0), (int(self.x), int(self.y), 32, 32))
 
-class Terrain:
+class Terrain():
     def __init__(self, x, y, Type):
         self.x = x
         self.y = y
@@ -241,7 +241,7 @@ class Terrain:
         # this blits the tiles at the position, but starting with 6*32 end ending 32 further
         screen.blit(spr_tiles, (int(self.x), int(self.y)), (self.type * 32, 0, 32, 32))
 
-class Crystal:
+class Crystal():
     def __init__(self, x, y, num):
         self.x = x
         self.y = y
@@ -272,7 +272,7 @@ class Crystal:
             # screen.blit(ball2, ((int(self.x) - math.cos(timer / 8) * 16), int(self.y) + math.cos(timer / 16) * 16), ((timer % 16 < 8) * 32, 0, 32, 32))
 
 
-class LargeCrystal:
+class LargeCrystal():
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -286,7 +286,6 @@ class LargeCrystal:
         global player_x
         global countdown
         if ((player.x - self.x)**2 + (
-
             player.y - self.y)**2)**0.5 < 96 and self.alive and countdown > 0:
             self.timer += 1
             if self.timer > 80 and self.alive:
@@ -372,6 +371,8 @@ while run:
                 load.append(Crystal(j*32, i*32, room_num))
             elif layout[room_num][i][j] == 101:
                 load.append(LargeCrystal(j*32, i*32))
+            # elif layout[room_num][i][j] == "L":
+            #     load.append(LargeCrystal(j*32, i*32))
 
     if player not in load and room_num not in (0, 14, 15):
         load.append(player)
