@@ -88,12 +88,15 @@ class Player():
         # if self.timer <= 0:
         #     #                        JUMP
 
-        if keys[pygame.K_UP] and (self.bottomCol or self.rightCol or self.leftCol):
+        if keys[pygame.K_UP] and (self.bottomCol or self.rightCol or self.leftCol) and not self.topCol:
             if self.jump_once < 1:
         # if keys[pygame.K_UP] and self.bottomCol:
                 self.ySpeed = -8
                 self.bottomCol = 0
                 self.jump_once += .5
+        if keys[pygame.K_DOWN]:
+            self.ySpeed = +8
+
 
                                  #############
         #                         LEFT - RIGHT                           #
@@ -463,5 +466,7 @@ while run:
         player_y = player.y
         player_x = -8
         room_num += 1
+    # if player.y + 16 < 0:
+    #     room = 0
             
 pygame.quit()

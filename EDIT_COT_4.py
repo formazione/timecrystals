@@ -238,7 +238,7 @@ while True:
                 riga = 0
 
             if event.key == pygame.K_g:
-                os.system("py GAME3.py")
+                os.system("py GAME4b.py")
 
             # Go to last room
             if event.key == pygame.K_UP:
