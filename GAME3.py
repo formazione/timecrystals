@@ -39,7 +39,7 @@ title = load("assets/title.png").convert()
 
 # ==================== SOUNDS ========================
 sfx_crash = pygame.mixer.Sound("assets/crash.wav")
-sfx_crash.set_volume(0.2)
+# sfx_crash.set_volume(0.5)
 sfx_collect = pygame.mixer.Sound("assets/collect.wav")
 sfx_crystal = pygame.mixer.Sound("assets/crystal.wav")
 
@@ -129,9 +129,10 @@ class Player():
         # pygame.draw.rect(display, (0, 255, 0), (int(self.x), int(self.y), 32, 32))
 
 class Terrain():
-    def __init__(self, x, y, Type):
+    def __init__(self, x, y, Type, level):
         self.x = x
         self.y = y
+        self.level = level
         self.col = False
         self.type = Type
     def update(self):
@@ -202,7 +203,8 @@ class Terrain():
         
     def draw(self):
         # this blits the tiles at the position, but starting with 6*32 end ending 32 further
-        screen.blit(spr_tiles, (int(self.x), int(self.y)), (self.type * 32, 0, 32, 32))
+        screen.blit(spr_tiles, (int(self.x), int(self.y)),
+            (self.type * 32, 0 + self.level, 32, 32))
 
 class Crystal():
     def __init__(self, x, y, num):
@@ -215,7 +217,7 @@ class Crystal():
             collected.append((self.x, self.y, room_num))
             
             # DO not want the player to stop when collects a crystal (it is annoying)
-            # player.timer = 15
+            player.timer = 15
             # but I do want countdown to go back
             
             # You make the countdown to go back 2.7.21 8:39
@@ -248,8 +250,8 @@ class LargeCrystal():
         global player_y
         global player_x
         global countdown
+        # Se il la radice quadrata della somma dei quadrati di distanza orizz. e vert. è minore di 96
         if ((player.x - self.x)**2 + (
-
             player.y - self.y)**2)**0.5 < 96 and self.alive and countdown > 0:
             self.timer += 1
             if self.timer > 80 and self.alive:
@@ -307,7 +309,7 @@ room_c = len(layout[room_num][0])
 
 def music_on():
     music = pygame.mixer.music.load("assets/swinging in the night sky2.wav")
-    pygame.mixer.music.set_volume(0.3)
+    pygame.mixer.music.set_volume(2)
     pygame.mixer.music.play(-1)
 
 # str_num_tiles = [str(x) for x in range(NUM_OF_TILES)]
@@ -328,14 +330,19 @@ while run:
                 player = Player(j*32, i*32)
                 load.append(player)
                 # ========================================== Here go the tiles
-            if layout[room_num][i][j].isdigit():
-                val = int(layout[room_num][i][j])
-                load.append(Terrain(j*32, i*32, val))
-                # ======================================= CRYSTAL
-            elif layout[room_num][i][j] == "C":
-                load.append(Crystal(j*32, i*32, room_num))
-            elif layout[room_num][i][j] == "L":
-                load.append(LargeCrystal(j*32, i*32))
+            if layout[room_num][i][j] != " ":
+                if int(layout[room_num][i][j]) < 100:
+                    level = 0
+                    val = int(layout[room_num][i][j])
+                    if val > 10:
+                        val = val - 10
+                        level = 32
+                    load.append(Terrain(j*32, i*32, val, level))
+                    # ======================================= CRYSTAL
+                elif layout[room_num][i][j] == "100":
+                    load.append(Crystal(j*32, i*32, room_num))
+                elif layout[room_num][i][j] == "101":
+                    load.append(LargeCrystal(j*32, i*32))
 
     if player not in load and room_num not in (0, 14, 15):
         load.append(player)

@@ -1,0 +1,51 @@
+====================== INDEX ===============
+
+
+=========
+CLASSES
+=========
+Terrain
+=========
+==============
+SOUND EFFECTS 
+==============
+play sound and soundtrack
+
+
+=========
+WHILE RUN
+=========
+
+
+================= TUTORIAL ==================
+
+
+=========
+CLASSES
+=========
+Terrain
+=========
+
+
+type
+=====
+4 = jump
+
+self.type += 200 makes it disappear, but
+it will return if you re enter the room
+
+
+==============
+SOUND EFFECTS
+==============
+In TERRAIN
+pygame.mixer.Sound.play(sfx_crystal)
+
+in WHILE RUN
+music = pygame.mixer.music.load("assets/swinging in the night sky.wav")
+pygame.mixer.music.set_volume(0.5)
+pygame.mixer.music.play(-1)
+
+=========
+WHILE RUN
+=========

@@ -23,7 +23,7 @@ screen0 = pygame.Surface((width*Sprite.width, height*Sprite.height + 64))
 
 background = pygame.image.load("assets\\background.png")
 
-
+riga = 0
 def blit_tiles(bg="") -> tuple:
     """ blit on a secundary surface first """
     if bg != "":
@@ -31,13 +31,14 @@ def blit_tiles(bg="") -> tuple:
     tup = []    
     for y, line in enumerate(_map): # y is the number of the line
         for x, str_num in enumerate(line): # x is the number of the column
-            if str_num.isdigit():
-                # takes a part of the tilesheet based on the number
-                if int(str_num) < NUM_OF_TILES:
-                    screen0.blit(tiles, (x*32, y*32), (int(str_num) * 32, 0, 32, 32))
-            elif str_num == "C":
-                screen0.blit(diamond, (x*32, y*32))
-    screen0.blit(tiles, (0, 320))
+            if str_num != " ":
+                if int(str_num) < 100 :
+                    # takes a part of the tilesheet based on the number
+                    if int(str_num) < NUM_OF_TILES:
+                        screen0.blit(tiles, (x*32, y*32), (int(str_num) * 32, 0, 32, 32))
+                elif str_num == "100":
+                    screen0.blit(diamond, (x*32, y*32))
+    screen0.blit(tiles, (0, 320), (0, riga, 32* NUM_OF_TILES, 32))
 
     return tup
 # Load an image
@@ -258,7 +259,7 @@ while True:
 
           if pygame.mouse.get_pressed()[1]:
               x, y = get_pos()
-              layout[room][y][x] = "C"
+              layout[room][y][x] = "100"
               update_screen()
 
           if pygame.mouse.get_pressed()[2]:

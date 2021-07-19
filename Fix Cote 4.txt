@@ -1,0 +1,24 @@
+Fix Cote 4.0
+
+timecrystals directory
+Edit_cot_4.py
+Game4.py
+
+
+Now you can use 22 tiles instead of 11
+3, 4 and 5 are to jump, go back, or go down
+
+from 17.7.2021
+- second line of tiles, 11 per line now work
+- fixed message, now is visible on screen'
+- added Escape key to quit
+- new tile 12 terrain dirt more dark with grass
+- tile brick red
+- fixed new tiles also for GAME4.py
+- wheel mouse up/down toggle tiles 1 and 2
+- key 1 and 2 for tiles 1 and 2
+- fixed the m and n cloning map (copying from editorw1 in cotb2_working dir)
+
+4a
+
+- changed the time line on the right
