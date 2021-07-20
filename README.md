@@ -13,3 +13,41 @@ Follow the progress in my blog
 https://pythonprogramming.altervista.org/
 
 ![](https://pythonprogramming.altervista.org/wp-content/uploads/2020/08/cropped-python_pygame.png)
+
+Videos about this map editor
+
+- New free game: Crystal of time
+https://youtu.be/BKxd3z-GVeE
+
+- How to make a map editor 1
+https://youtu.be/LHTPVH1PXcA
+
+- How to make a map editor 2
+https://youtu.be/xp5Vj8ueyiE
+
+- How to make a map editor 3
+https://youtu.be/bgz1MLbvM1U
+
+- Map editor 1.5
+https://youtu.be/PelxCis1B6Y
+
+- Map editor 1.6
+https://youtu.be/q-0yOIVsl-g
+
+- How to make a videogame map editor with Python - MEP v. 2.1
+https://youtu.be/LAJgnaX8tUE
+
+- Map editor for 2d platform game in Python with Pygame v.3.0
+https://youtu.be/vg1Jwu2hbtc
+
+- How to save a list with pickle with python
+https://youtu.be/txUfcN68qe0
+
+- Pygame Map Editor 4.0 for Crystals of time
+https://youtu.be/6C9mKzKc1wU
+
+Github repository
+https://github.com/formazione/timecrystals
+
+Newest branch (to clone it with git)
+git clone --branch cotb2 https://github.com/formazione/timecrystals.git
