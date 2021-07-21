@@ -4,7 +4,7 @@ from pygame.locals import *
 # are created by this program with 's'
 from levels2b import *
 
-COUNTDOWN_LIMIT = 3000
+COUNTDOWN_LIMIT = 2000
 
 def init():
     pygame.init()
@@ -25,7 +25,7 @@ pygame.display.set_caption("Crystals of Time by SmellyFrog")
 
 # ================ I M A G E S =============== LOAD into Surfaces =====
 load = pygame.image.load
-spr_player = load("assets/player.png").convert_alpha()
+spr_player = load("assets/player2.png").convert_alpha()
 # ======================= IMAGES ==============================
 player_rect = spr_player.get_rect()
 ball1 = pygame.image.load("assets/ball1.png").convert_alpha()
@@ -44,6 +44,7 @@ sfx_crash = pygame.mixer.Sound("assets/crash.wav")
 # sfx_crash.set_volume(0.5)
 sfx_collect = pygame.mixer.Sound("assets/collect.wav")
 sfx_crystal = pygame.mixer.Sound("assets/crystal.wav")
+jump = pygame.mixer.Sound("assets/jump.mp3")
 
 # THE SPRITE FOR THE PLAYER
 class Player():
@@ -88,6 +89,7 @@ class Player():
 
         # timer is used to stop the player when collects a crystal (I do not want it)
         # if self.timer <= 0:
+
         #     #                        JUMP
 
         if keys[pygame.K_UP] and (self.bottomCol or self.rightCol or self.leftCol) and not self.topCol:
@@ -96,6 +98,7 @@ class Player():
                 self.ySpeed = -8
                 self.bottomCol = 0
                 self.jump_once += .5
+            pygame.mixer.Sound.play(jump)
         if keys[pygame.K_DOWN]:
             self.ySpeed = +8
 
@@ -134,7 +137,9 @@ class Player():
             spr_player, 
             (int(self.x), int(self.y)),
             # Here is where he gets the sprite from the spritesheet
-            (self.frame * 32, (not self.faceRight) * 32, 32, 32))
+            (self.frame * 32, # x position for the pose
+            (not self.faceRight) * 32, # y position 0 = left 1=left
+            32, 32))
         # pygame.draw.rect(display, (0, 255, 0), (int(self.x), int(self.y), 32, 32))
 
 class Terrain():
@@ -147,19 +152,18 @@ class Terrain():
     def update(self):
         # Se il giocatore si trova sopra ad un tile... cos'è self.col
         # quand'è che self.col = 1???
-        player_on_edge = player.x + 32 > self.x
-        not_beyond_tile = player.x < self.x + 32
 
-
-
+        left_edge = self.x + 32
+        right_edge = self.x
         # bottomCol collition with a tile on the bottom
 
-        if player_on_edge and not_beyond_tile and not self.col: # collition with self?
-            # se il bottom del player è maggiore della base del tile, ma minore della metà del tile
-
-            if player.y + 32 > self.y and player.y + 32 < self.y + 16:
+        if player.x + 32 > right_edge and player.x < left_edge and not self.col: # collition with self?
+            # player_bottom
+            player_bottom = player.y + 32
+            # Se i piedi del player si trovano all'altezza del tile, cioè sopra...
+            if player_bottom > self.y and player_bottom < self.y + 16:
                 # il player viene piazzato esattamente sopra il tile
-                player.y = self.y - 32
+                player.y = self.y - 32 # sarebbe che il player si trova 32 pixel sopra la base del tile
                 player.ySpeed = 0
                 player.bottomCol = True # Collition with the bottom, the player is on the terrain
                 self.col = True #Vuol dire che il tile è in contatto con il player
@@ -169,19 +173,19 @@ class Terrain():
 
                 # Tipes of tiles
 
-                # Fire, makes you go back of 96
+                # BACK
                 if self.type == 3:
                     player.x -= 96
                     pygame.mixer.Sound.play(sfx_crystal)
 
-                # This is to jump
+                # TRAMPOLINE
                 
                 elif self.type == 4: 
                     player.ySpeed = -10
                     player.bottomCol = False
                     pygame.mixer.Sound.play(sfx_crystal)
                 
-                # This make you go down
+                # DOWN
                 
                 elif self.type == 5:
                     player.y += 64
@@ -195,7 +199,8 @@ class Terrain():
                     player.topCol = True # collide col tile verso l'alto
                     self.col = True # la collisione del player c'è
         
-
+        # se i piedi sono sopra un tile e la testa è minore della base del tile e non c'è collisione
+        # if player.y + 32 > self.y and player.y < self.y + 32 and not self.col:
         if player.y + 32 > self.y and player.y < self.y + 32 and not self.col:
 
             if player.x + 32 > self.x and player.x + 32 < self.x + 16:
@@ -292,21 +297,6 @@ def game_over():
 
 
    
-'''
-P is the player
-0 is the grass
-2 is the wall
-1 is the dirt
-C diamond
-4 jumper
-3 danger stone
-'''
-
-
-
-
-
-
 player_y = 42069
 player_x = 42069
 collected = []
@@ -334,9 +324,9 @@ def room_number():
 
 
 def time_indicator():
-    pygame.draw.line(screen, (200, 255, 255), (239, 160 - (countdown // 6)), (239, -4), 6)
-    pygame.draw.circle(screen, (200, 255, 255), (240, 160 - (countdown // 6)), 8)
-    pygame.draw.circle(screen, (255, 255, 255), (240, 164 - (countdown // 6)), 4)
+    pygame.draw.line(screen, (200, 255, 255), (239, 280 - (countdown // 7)), (239, -4), 6)
+    pygame.draw.circle(screen, (200, 255, 255), (240, 280 - (countdown // 7)), 8)
+    pygame.draw.circle(screen, (255, 255, 255), (240, 280 - (countdown // 7)), 4)
 
 while run:
     ### level generation
@@ -352,7 +342,7 @@ while run:
                 player = Player(j*32, i*32)
                 load.append(player)
                 # ========================================== Here go the tiles
-            if layout[room_num][i][j] != " ":
+            if layout[room_num][i][j] != " " and layout[room_num][i][j] != "P":
                 if int(layout[room_num][i][j]) < 100:
                     level = 0
                     val = int(layout[room_num][i][j])
@@ -454,17 +444,24 @@ while run:
             player_x = 42069
             collected = []
         
-        display.fill(0)
+
+        # COLOR OF THE BACKGROUND OF THE PRIMARY SCREEN
+        display.fill((0, 255, 255))
+        
+
         if countdown > 0:
             if countdown < 300 and countdown > 200:
                 color_line = 255, 100, 0
             elif countdown < 200:
                 color_line = 255, 0, 0
 
+
+
+            # INDICATES THE TIME PASSING ON THE RIGHT OF THE SCREEN
             pygame.draw.line(display,
                 color_line, # color
                 (488*2 + 32, 0 - countdown // 10), # (x, y)
-                (488*2 + 32, 120 - countdown // 10), # (x, y)
+                (488*2 + 32, 100 - countdown // 10), # (x, y)
                 100)
         # pygame.draw.circle(display, (100, 255, 0), (488*2 + 32, 160 - (countdown // 10)), 8)
         # pygame.draw.circle(display, (255, 255, 255), (488*2 + 32, 164 - (countdown // 10)), 4)

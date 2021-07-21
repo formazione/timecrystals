@@ -1,25 +1,32 @@
 # editor_mode
 import pygame
 import os
-from locals.variables import *
+from levels2b import *
 
 
 pygame.init()
 
+columns = 15
+rows = 9
+spr_width = 32
+spr_height = 32
+tiles = pygame.image.load("assets\\tiles4.png")
+NUM_OF_TILES = tiles.get_size()[0] // 32
+menu = pygame.image.load("assets\\menu2.png")
+diamond = pygame.image.load("assets\\diamond.png")
+diamond2 = pygame.image.load("assets\\crystal2.png")
+size = WD, HG = columns*spr_width, rows*spr_height
+DOUBLE_SIZE = WD*2, HG*2 + 128
 
 
-from levels2b import *
-
-# Convert string to list to modify elements
-# for n, eachmap in enumerate(layout[1]):
-#     layout[n] = list(layout[n])
+# The first room
 _map = layout[1]
+# _map[2][1] = "P"
 print(_map)
-
-size = width*Sprite.width, height*Sprite.height
+# The size is given by the 
 print(f"{size=}")
 screen = pygame.display.set_mode(DOUBLE_SIZE)
-screen0 = pygame.Surface((width*Sprite.width, height*Sprite.height + 64))
+screen0 = pygame.Surface((WD, HG + 64))
 
 background = pygame.image.load("assets\\background.png")
 
@@ -50,7 +57,7 @@ def blit_tiles(bg="") -> tuple:
     tup = []    
     for y, line in enumerate(_map): # y is the number of the line
         for x, str_num in enumerate(line): # x is the number of the column
-            if str_num != " ":
+            if str_num != " " and str_num != "P":
                 if int(str_num) < 100 :
                     # takes a part of the tilesheet based on the number
                     level = 0
@@ -70,6 +77,9 @@ def blit_tiles(bg="") -> tuple:
                     screen0.blit(tiles, (x*32, y*32), (int(str_num) * 32, 0 + level, 32, 32))
                 elif str_num == "100":
                     screen0.blit(diamond, (x*32, y*32))
+                elif str_num == "101":
+                    screen0.blit(diamond2, (x*32, y*32))
+
     screen0.blit(tiles, (0, 320), (0, riga, 32* NUM_OF_TILES, 32))
 
     return tup
@@ -164,12 +174,14 @@ room = 1
 # print(f"{room_len=}")
 menu_visible = 0
 
-def goto_room(room_num):
+def goto_room(room_num, msg=""):
     global _map
 
     _map = layout[room]
     update_screen()
-    message(f"you went int room {room}")
+    if msg == "":
+        message(f"you went int room {room}")
+
 
 def position_tile(symbol):
     """ get the x and y and put in the map list the symbol for that tile """
@@ -258,6 +270,17 @@ while True:
                 room = room_len - 1
                 goto_room(room)
 
+            if event.key == pygame.K_d:
+                new_map = []
+                for n, line in enumerate(_map):
+                    for ni, i in enumerate(line):
+                        line[ni] = "-1"
+                    new_map.append(line)
+                layout.append(new_map)
+                room_len = len(layout) # updates the lenght of the map
+                # message(f"You deleted all tiles in this map")
+                goto_room(room, "You deleted all tiles in the map")
+
                   
             if event.key == pygame.K_m:
                 new_map = []
@@ -319,7 +342,13 @@ while True:
               update_screen()
               print(tile_chosen_number)
 
-
+          if pygame.mouse.get_pressed()[1]:
+              x, y = get_pos()
+              if layout[room][y][x] != "100":
+                  layout[room][y][x] = "100"
+              else:
+                layout[room][y][x] = "101"
+              update_screen()
 
           if pygame.mouse.get_pressed()[2]:
               x, y = get_pos()
