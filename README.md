@@ -3,7 +3,7 @@ Hi, this is an editor for a 2d platform game. The game is not mine, but it's by 
 
 https://youtu.be/vg1Jwu2hbtc
 
-New Version: ![](https://youtu.be/aWUMMwvsqVg)
+New Version: https://youtu.be/aWUMMwvsqVg
 
 Clone the latest branch
 git clone --branch cotb2 https://github.com/formazione/timecrystals.git
